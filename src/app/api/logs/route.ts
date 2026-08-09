@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
-import Application from "@/models/Application";
+import Application, { IApplication } from "@/models/Application";
 import HealthCheck from "@/models/HealthCheck";
 
 function toCsv(rows: Record<string, unknown>[]): string {
@@ -31,7 +31,9 @@ export async function GET(req: NextRequest) {
   const search = params.get("search"); // free-text match against error message
   const format = params.get("format"); // "csv" to download
 
-  const userApplications = await Application.find({ userId }).select("name").lean();
+  const userApplications = await Application.find({ userId })
+  .select("name")
+  .lean<IApplication[]>();
   const appMap = new Map(userApplications.map((a) => [a._id.toString(), a.name]));
   let applicationIds = Array.from(appMap.keys());
 
