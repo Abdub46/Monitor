@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
-import SecurityEvent from "@/models/SecurityEvent";
+import SecurityEvent, { ISecurityEvent } from "@/models/SecurityEvent";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -20,7 +20,7 @@ export async function GET() {
   const events = await SecurityEvent.find({ email })
     .sort({ createdAt: -1 })
     .limit(100)
-    .lean();
+    .lean<ISecurityEvent[]>();
 
   return NextResponse.json(
     events.map((e) => ({

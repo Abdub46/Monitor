@@ -1,9 +1,9 @@
 import OpenAI from "openai";
 import mongoose from "mongoose";
-import Application from "@/models/Application";
-import HealthCheck from "@/models/HealthCheck";
+import Application, { IApplication } from "@/models/Application";
+import HealthCheck, { IHealthCheck } from "@/models/HealthCheck";
 import Incident from "@/models/Incident";
-import Diagnosis from "@/models/Diagnosis";
+import Diagnosis, { IDiagnosis } from "@/models/Diagnosis";
 import { calculateApplicationMetrics } from "@/lib/analytics/metrics";
 
 let client: OpenAI | null = null;
@@ -33,8 +33,10 @@ Rules:
  * request as the system context, so unbounded growth would blow up
  * token usage and cost as a user's history grows.
  */
+
+
 async function buildContext(userId: string): Promise<string> {
-  const applications = await Application.find({ userId }).lean();
+  const applications = await Application.find({ userId }).lean<IApplication[]>();
 
   if (applications.length === 0) {
     return "The user has no monitored applications yet.";
@@ -45,11 +47,15 @@ async function buildContext(userId: string): Promise<string> {
   const sections: string[] = [];
 
   for (const app of applications) {
-    const latestCheck = await HealthCheck.findOne({ applicationId: app._id })
-      .sort({ checkedAt: -1 })
-      .lean();
+   const latestCheck = await HealthCheck.findOne({ applicationId: app._id })
+  .sort({ checkedAt: -1 })
+  .lean<IHealthCheck>();
 
     const metrics = await calculateApplicationMetrics(app._id);
+
+
+
+
 
     const recentIncidents = await Incident.find({ applicationId: app._id })
       .sort({ startedAt: -1 })
@@ -57,7 +63,10 @@ async function buildContext(userId: string): Promise<string> {
       .lean();
 
     const diagnosisIds = recentIncidents.map((i) => i.diagnosisId).filter(Boolean);
-    const diagnoses = await Diagnosis.find({ _id: { $in: diagnosisIds } }).lean();
+    const diagnoses = await Diagnosis.find({
+  _id: { $in: diagnosisIds },
+}).lean<IDiagnosis[]>();
+
     const diagnosisMap = new Map(diagnoses.map((d) => [d._id.toString(), d]));
 
     const incidentLines = recentIncidents.map((inc) => {
