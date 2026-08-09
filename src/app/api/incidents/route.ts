@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
-import Application from "@/models/Application";
-import Incident from "@/models/Incident";
-import Diagnosis from "@/models/Diagnosis";
+import Application, { IApplication } from "@/models/Application";
+import Incident, { IIncident } from "@/models/Incident";
+import Diagnosis, { IDiagnosis } from "@/models/Diagnosis";
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -27,15 +27,20 @@ export async function GET(req: NextRequest) {
     query.applicationId = applicationIdFilter;
   }
 
-  const incidents = await Incident.find(query).sort({ startedAt: -1 }).limit(100).lean();
+  const incidents = await Incident.find(query)
+  .sort({ startedAt: -1 })
+  .limit(100)
+  .lean<IIncident[]>();
 
   const applications = await Application.find({ _id: { $in: applicationIds } })
-    .select("name environment")
-    .lean();
+  .select("name environment")
+  .lean<IApplication[]>();
   const appMap = new Map(applications.map((a) => [a._id.toString(), a]));
 
   const diagnosisIds = incidents.map((i) => i.diagnosisId).filter(Boolean);
-  const diagnoses = await Diagnosis.find({ _id: { $in: diagnosisIds } }).lean();
+  const diagnoses = await Diagnosis.find({
+  _id: { $in: diagnosisIds },
+}).lean<IDiagnosis[]>();
   const diagnosisMap = new Map(diagnoses.map((d) => [d._id.toString(), d]));
 
   const result = incidents.map((incident) => ({

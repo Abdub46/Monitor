@@ -3,8 +3,8 @@ import { getServerSession } from "next-auth";
 import mongoose from "mongoose";
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
-import Application from "@/models/Application";
-import Incident from "@/models/Incident";
+import Application, { IApplication } from "@/models/Application";
+import Incident, { IIncident } from "@/models/Incident";
 import Diagnosis from "@/models/Diagnosis";
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
@@ -20,20 +20,23 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   await connectToDatabase();
   const userId = (session.user as { id: string }).id;
 
-  const incident = await Incident.findById(params.id).lean();
+  const incident = await Incident.findById(params.id).lean<IIncident>();
   if (!incident) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
   // Ownership check: the incident's application must belong to this user.
-  const app = await Application.findOne({ _id: incident.applicationId, userId }).lean();
+  const app = await Application.findOne({
+  _id: incident.applicationId,
+  userId,
+}).lean<IApplication>();
   if (!app) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const diagnosis = incident.diagnosisId
-    ? await Diagnosis.findById(incident.diagnosisId).lean()
-    : null;
+ const diagnosis = incident.diagnosisId
+  ? await Diagnosis.findById(incident.diagnosisId.toString()).lean()
+  : null;
 
   return NextResponse.json({
     id: incident._id.toString(),

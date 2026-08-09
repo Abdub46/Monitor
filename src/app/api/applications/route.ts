@@ -3,8 +3,8 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
-import Application from "@/models/Application";
-import HealthCheck from "@/models/HealthCheck";
+import Application, { IApplication } from "@/models/Application";
+import HealthCheck, { IHealthCheck } from "@/models/HealthCheck";
 
 const applicationSchema = z.object({
   name: z.string().min(1).max(100),
@@ -27,15 +27,17 @@ export async function GET() {
   await connectToDatabase();
 
   const userId = (session.user as { id: string }).id;
-  const applications = await Application.find({ userId }).sort({ createdAt: -1 }).lean();
+  const applications = await Application.find({ userId })
+  .sort({ createdAt: -1 })
+  .lean<IApplication[]>();
 
   // Attach the latest health check for each application so the
   // dashboard can render status without a second round trip per card.
   const withStatus = await Promise.all(
     applications.map(async (app) => {
       const latest = await HealthCheck.findOne({ applicationId: app._id })
-        .sort({ checkedAt: -1 })
-        .lean();
+  .sort({ checkedAt: -1 })
+  .lean<IHealthCheck>();
 
       return {
         id: app._id.toString(),
