@@ -5,7 +5,7 @@ import { ThemeProvider } from "@/lib/theme";
 import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
 
 export const metadata: Metadata = {
-  title: "Monitoring Platform",
+  title: "MONITOR",
   description: "AI-powered application monitoring",
   manifest: "/manifest.json",
   icons: {
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Monitoring Platform",
+    title: "MONITOR",
   },
 };
 
