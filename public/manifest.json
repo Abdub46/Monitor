@@ -1,5 +1,5 @@
 {
-  "name": "Monitoring Platform",
+  "name": "MONITOR",
   "short_name": "MONITOR",
   "description": "AI-powered application monitoring — uptime checks, incident diagnosis, and alerts.",
   "start_url": "/dashboard",
