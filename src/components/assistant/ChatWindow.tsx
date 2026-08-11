@@ -68,7 +68,7 @@ export default function ChatWindow() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-160px)] rounded-lg border border-gray-800 bg-gray-900">
+    <div className="flex flex-col h-[70vh] sm:h-[calc(100vh-180px)] rounded-lg border border-gray-800 bg-gray-900">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {loadingHistory ? (
           <p className="text-sm text-gray-500">Loading...</p>

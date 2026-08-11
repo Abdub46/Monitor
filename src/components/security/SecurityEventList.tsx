@@ -37,10 +37,10 @@ export default function SecurityEventList({ events }: { events: SecurityEvent[] 
       {events.map((event) => (
         <div
           key={event.id}
-          className="flex items-center justify-between rounded-lg border border-gray-800 bg-gray-900 px-4 py-3 text-sm"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 rounded-lg border border-gray-800 bg-gray-900 px-4 py-3 text-sm"
         >
-          <div>
-            <div className="flex items-center gap-2">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
               <span
                 className={`text-xs px-1.5 py-0.5 rounded ${SEVERITY_STYLE[event.severity]}`}
               >
@@ -48,9 +48,9 @@ export default function SecurityEventList({ events }: { events: SecurityEvent[] 
               </span>
               <span className="font-medium">{TYPE_LABEL[event.type] ?? event.type}</span>
             </div>
-            <p className="text-xs text-gray-500 mt-1">{event.details}</p>
+            <p className="text-xs text-gray-500 mt-1 break-words">{event.details}</p>
           </div>
-          <div className="text-right text-xs text-gray-500">
+          <div className="text-left sm:text-right text-xs text-gray-500 flex-shrink-0">
             <p>{event.ipAddress}</p>
             <p>{new Date(event.createdAt).toLocaleString()}</p>
           </div>

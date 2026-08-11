@@ -53,6 +53,8 @@ export async function GET() {
         isActive: app.isActive,
         latestStatus: latest?.status ?? null,
         latestResponseTimeMs: latest?.responseTimeMs ?? null,
+        latestHttpStatusCode: latest?.httpStatusCode ?? null,
+        latestError: latest?.error ?? null,
         lastCheckedAt: latest?.checkedAt ?? null,
       };
     })

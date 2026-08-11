@@ -42,20 +42,14 @@ async function buildContext(userId: string): Promise<string> {
     return "The user has no monitored applications yet.";
   }
 
-  const appIds = applications.map((a) => a._id);
-
   const sections: string[] = [];
 
   for (const app of applications) {
-   const latestCheck = await HealthCheck.findOne({ applicationId: app._id })
-  .sort({ checkedAt: -1 })
-  .lean<IHealthCheck>();
+    const latestCheck = await HealthCheck.findOne({ applicationId: app._id })
+      .sort({ checkedAt: -1 })
+      .lean<IHealthCheck>();
 
     const metrics = await calculateApplicationMetrics(app._id);
-
-
-
-
 
     const recentIncidents = await Incident.find({ applicationId: app._id })
       .sort({ startedAt: -1 })
@@ -63,9 +57,7 @@ async function buildContext(userId: string): Promise<string> {
       .lean();
 
     const diagnosisIds = recentIncidents.map((i) => i.diagnosisId).filter(Boolean);
-    const diagnoses = await Diagnosis.find({
-  _id: { $in: diagnosisIds },
-}).lean<IDiagnosis[]>();
+    const diagnoses = await Diagnosis.find({ _id: { $in: diagnosisIds } }).lean<IDiagnosis[]>();
 
     const diagnosisMap = new Map(diagnoses.map((d) => [d._id.toString(), d]));
 

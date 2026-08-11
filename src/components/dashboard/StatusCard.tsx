@@ -34,8 +34,8 @@ export default function StatusCard({
 
   return (
     <div
-      className={`rounded-lg border bg-gray-900 p-4 ${
-        config?.border ?? "border-gray-800"
+      className={`rounded-lg border bg-gray-100 dark:bg-gray-900 p-4 ${
+        config?.border ?? "border-gray-200 dark:border-gray-800"
       }`}
     >
       <div className="flex items-start justify-between">
@@ -44,26 +44,30 @@ export default function StatusCard({
           <p className="text-xs text-gray-500">{app.environment}</p>
         </div>
         <div className="flex items-center gap-1.5 text-xs">
-          <span className={`h-2 w-2 rounded-full ${config?.dot ?? "bg-gray-600"}`} />
+          <span className={`h-2 w-2 rounded-full ${config?.dot ?? "bg-gray-400 dark:bg-gray-600"}`} />
           {config?.label ?? "No data yet"}
         </div>
       </div>
 
-      <dl className="mt-3 grid grid-cols-2 gap-y-1 text-xs text-gray-400">
+      <dl className="mt-3 grid grid-cols-2 gap-y-1 text-xs text-gray-600 dark:text-gray-400">
         <dt>Response time</dt>
-        <dd className="text-right text-gray-200">
+        <dd className="text-right text-gray-800 dark:text-gray-200">
           {app.latestResponseTimeMs != null ? `${app.latestResponseTimeMs}ms` : "—"}
         </dd>
         <dt>Last checked</dt>
-        <dd className="text-right text-gray-200">{formatRelativeTime(app.lastCheckedAt)}</dd>
+        <dd className="text-right text-gray-800 dark:text-gray-200">{formatRelativeTime(app.lastCheckedAt)}</dd>
         <dt>Interval</dt>
-        <dd className="text-right text-gray-200">{app.monitoringIntervalSeconds}s</dd>
+        <dd className="text-right text-gray-800 dark:text-gray-200">{app.monitoringIntervalSeconds}s</dd>
       </dl>
+
+      {status === "offline" && app.latestError && (
+        <p className="mt-2 text-xs text-red-500 break-words">{app.latestError}</p>
+      )}
 
       <div className="mt-4 flex items-center justify-between text-xs">
         <button
           onClick={() => onToggle(app.id, !app.isActive)}
-          className="text-gray-400 hover:text-gray-100"
+          className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
         >
           {app.isActive ? "Pause monitoring" : "Resume monitoring"}
         </button>

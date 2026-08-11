@@ -17,6 +17,8 @@ export interface ApplicationDTO {
   isActive: boolean;
   latestStatus?: CheckStatus;
   latestResponseTimeMs?: number;
+  latestHttpStatusCode?: number | null;
+  latestError?: string;
   lastCheckedAt?: string;
 }
 
